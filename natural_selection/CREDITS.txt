@@ -1,0 +1,34 @@
+Background photos for the natural selection applet, all from Wikimedia Commons.
+Each <name>.jpg is a crop of the ground in the original, resized to 1280 x 720;
+each <name>-postcard.jpg is the whole photo, resized. Both are adaptations of the
+original and are shared under the same licence as it.
+
+oklahoma.jpg, oklahoma-postcard.jpg (Oklahoma)
+  Oklahoma red dirt road.JPG
+  by Ks0stm
+  licence: CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0)
+  source: https://commons.wikimedia.org/wiki/File:Oklahoma_red_dirt_road.JPG
+
+newyork.jpg, newyork-postcard.jpg (New York)
+  Bluestone sidewalk - Manhattan, New York City - DSC06864.jpg
+  by Daderot
+  licence: CC0 (http://creativecommons.org/publicdomain/zero/1.0/deed.en)
+  source: https://commons.wikimedia.org/wiki/File:Bluestone_sidewalk_-_Manhattan,_New_York_City_-_DSC06864.jpg
+
+southcarolina.jpg, southcarolina-postcard.jpg (South Carolina)
+  Tibwin creek south carolina.jpg
+  by Bill Lea
+  licence: Public domain
+  source: https://commons.wikimedia.org/wiki/File:Tibwin_creek_south_carolina.jpg
+
+minnesota.jpg, minnesota-postcard.jpg (Minnesota)
+  Winter Trail at Battle Creek Regional Park, Saint Paul, Minnesota (47206742192).jpg
+  by Tony Webster
+  licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0)
+  source: https://commons.wikimedia.org/wiki/File:Winter_Trail_at_Battle_Creek_Regional_Park,_Saint_Paul,_Minnesota_(47206742192).jpg
+
+spain.jpg, spain-postcard.jpg (Spain)
+  Wheat fields in Burgos.jpg
+  by Jardoz
+  licence: CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0)
+  source: https://commons.wikimedia.org/wiki/File:Wheat_fields_in_Burgos.jpg
