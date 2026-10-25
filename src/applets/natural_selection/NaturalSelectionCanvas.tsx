@@ -19,8 +19,9 @@ import { hexToRgb, rgbToLab } from "./color";
 import {
   createHistoryLayer,
   DARWIN_COLOUR,
-  HIST_H,
+  HIDE_KEY_MAX,
   HIST_W,
+  historyHeight,
   LAMARCK_COLOUR,
   renderHistory,
   renderScene,
@@ -391,11 +392,11 @@ export function NaturalSelectionCanvas({ host }: Props): JSX.Element {
   const inset = (
     <canvas
       ref={histRef}
-      style={{ width: HIST_W, height: HIST_H }}
+      style={{ width: HIST_W, height: historyHeight(trait === "hiding") }}
       role="img"
       aria-label={
         trait === "hiding"
-          ? "The blobs' average hiding time over the last two minutes, with the spread around it"
+          ? `Key to the blobs' colours, pale blue for short hiding times to deep blue for ${HIDE_KEY_MAX} seconds or more, then the blobs' average hiding time over the last two minutes, with the spread around it`
           : "The blobs' colours over the last two minutes, with the background colour along the top"
       }
     />
@@ -440,7 +441,12 @@ export function NaturalSelectionCanvas({ host }: Props): JSX.Element {
           some shorter). If the blob reappears while it is still waiting, it is caught. If the predator gives up first,
           the blob got away. So the longer a blob can hide, the better its chances.
         </li>
-        <li>The chart (bottom right) shows the average hiding time, and the spread from the shorter to the longer hiders.</li>
+        <li>
+          Each blob is drawn in a colour that shows its hiding time: pale blue for short, deep blue for long ({HIDE_KEY_MAX}{" "}
+          seconds or more), as in the key at the bottom right. Only we see these colours: to the predators every blob
+          looks the same.
+        </li>
+        <li>The chart under the key shows the average hiding time, and the spread from the shorter to the longer hiders.</li>
       </ul>
       <h4>Darwin or Lamarck?</h4>
       <ul>

@@ -20,12 +20,37 @@ import {
 
 export const HIST_W = 300;
 export const HIST_H = 128;
+/** With hiding as the trait the inset also carries the colour key, so it is taller. */
+const HIST_H_HIDING = 172;
+
+export function historyHeight(hiding: boolean): number {
+  return hiding ? HIST_H_HIDING : HIST_H;
+}
 
 const PREDATOR_BODY = "#7b3fb3";
 const PREDATOR_DARK = "#4a1f73";
 const PREDATOR_LIGHT = "#a873d9";
 
 export type Ground = { image: HTMLImageElement | null; colour: string };
+
+/**
+ * With hiding as the trait, blobs are drawn in a colour that shows their hiding time: pale blue
+ * for short, deep blue for long, from 0 to HIDE_KEY_MAX seconds (longer ones take the deepest).
+ * Only we see it; predators still judge every blob by its real colour, which is the same for all.
+ */
+export const HIDE_KEY_MAX = 8;
+const HIDE_KEY = ["#cde2fb", "#3987e5", "#0d366b"].map((hex) => rgbToLab(hexToRgb(hex)));
+
+export function hideColour(hide: number): Lab {
+  const f = Math.min(1, Math.max(0, hide / HIDE_KEY_MAX)) * (HIDE_KEY.length - 1);
+  const k = Math.min(HIDE_KEY.length - 2, Math.floor(f));
+  return mixLab(HIDE_KEY[k], HIDE_KEY[k + 1], f - k);
+}
+
+function tintedByHide(b: Blob): Blob {
+  const colour = hideColour(b.hide);
+  return { ...b, colour, css: labToCss(colour) };
+}
 
 /** Line colours for the two halves of the side-by-side view. */
 export const DARWIN_COLOUR = "#7cc4ff";
@@ -679,8 +704,17 @@ export function renderScene(ctx: CanvasRenderingContext2D, w: World, ground: Gro
   for (const f of w.fruits) {
     drawFruit(ctx, f, t);
   }
+  const byHide = w.settings.trait === "hiding";
   for (const b of w.blobs) {
-    drawBlob(ctx, b, t);
+    if (byHide && b.repro < 0 && b.caught < 0 && b.dying < 0 && b.hiding === 0) {
+      // A dark rim, so the pale (short-hiding) blobs stay readable on light grounds like snow.
+      ctx.strokeStyle = "rgba(10, 22, 45, 0.6)";
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, BLOB_R + 1, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    drawBlob(ctx, byHide ? tintedByHide(b) : b, t);
   }
   if (standOut) {
     drawStandOut(ctx, w);
@@ -834,14 +868,44 @@ function renderHideChart(ctx: CanvasRenderingContext2D, worlds: World[], colours
   });
 }
 
+/** The key to the blobs' colours with hiding as the trait: a bar from short to long hiding times. */
+function renderHideKey(ctx: CanvasRenderingContext2D, x: number, y: number, w: number): void {
+  ctx.font = "500 11px system-ui, sans-serif";
+  ctx.textAlign = "left";
+  ctx.fillStyle = "rgba(235, 232, 226, 0.9)";
+  ctx.fillText("Blob colour", x, y + 9);
+  const bx = x + 70;
+  const bw = w - 70 - 8;
+  const g = ctx.createLinearGradient(bx, 0, bx + bw, 0);
+  for (let i = 0; i <= 16; i += 1) {
+    g.addColorStop(i / 16, labToCss(hideColour((i / 16) * HIDE_KEY_MAX)));
+  }
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.roundRect(bx, y, bw, 11, 3);
+  ctx.fill();
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.font = "500 10px system-ui, sans-serif";
+  ctx.fillStyle = "rgba(235, 232, 226, 0.75)";
+  for (let v = 0; v <= HIDE_KEY_MAX; v += 2) {
+    const tx = bx + (v / HIDE_KEY_MAX) * bw;
+    ctx.fillRect(tx - 0.5, y + 11, 1, 3);
+    ctx.textAlign = v === 0 ? "left" : v === HIDE_KEY_MAX ? "right" : "center";
+    ctx.fillText(v === HIDE_KEY_MAX ? `${v}+ s` : v === 0 ? "0 s" : String(v), v === HIDE_KEY_MAX ? tx + 2 : tx, y + 24);
+  }
+}
+
 /**
- * The inset. Colour: one ribbon per world (two, labelled, side by side). Hiding: the hiding-time
- * chart. `layers` must hold one layer per world.
+ * The inset. Colour: one ribbon per world (two, labelled, side by side). Hiding: the key to the
+ * blobs' colours, then the hiding-time chart. `layers` must hold one layer per world.
  */
 export function renderHistory(ctx: CanvasRenderingContext2D, layers: HistoryLayer[], worlds: World[], hiding: boolean): void {
   const pair = worlds.length > 1;
   const colours = pair ? [DARWIN_COLOUR, LAMARCK_COLOUR] : ["#ffffff"];
-  ctx.clearRect(0, 0, HIST_W, HIST_H);
+  const height = historyHeight(hiding);
+  ctx.clearRect(0, 0, HIST_W, height);
   ctx.font = "600 12px system-ui, sans-serif";
   ctx.textAlign = "left";
   ctx.fillStyle = "rgba(235, 232, 226, 0.9)";
@@ -856,7 +920,8 @@ export function renderHistory(ctx: CanvasRenderingContext2D, layers: HistoryLaye
   }
   const top = 20;
   if (hiding) {
-    renderHideChart(ctx, worlds, colours, 30, top + 4, HIST_W - 36, HIST_H - top - 10);
+    renderHideKey(ctx, 4, top + 2, HIST_W - 4);
+    renderHideChart(ctx, worlds, colours, 30, top + 44, HIST_W - 36, height - top - 50);
     return;
   }
   ctx.imageSmoothingEnabled = false;
