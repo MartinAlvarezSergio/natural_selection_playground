@@ -618,7 +618,8 @@ function stepBlobs(w: World, dt: number): void {
       }
       continue;
     }
-    if (b.age >= b.lifespan) {
+    // With hiding as the trait only predators (and asteroids) kill, so every death is selection.
+    if (b.age >= b.lifespan && colourEvolves) {
       b.dying = 0;
     }
   }

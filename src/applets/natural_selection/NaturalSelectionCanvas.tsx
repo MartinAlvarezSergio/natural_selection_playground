@@ -416,7 +416,8 @@ export function NaturalSelectionCanvas({ host }: Props): JSX.Element {
         </li>
         <li>
           Blobs that live a long time grow beards, and in the end die of old age: sooner when the ground is crowded,
-          later when there are few.
+          later when there are few. With hiding as the trait they don't die of old age: only predators kill, so every
+          death is down to hiding too briefly (or getting caught while recharging).
         </li>
         <li>If the blobs nearly die out, newcomers wander in from the edges.</li>
         <li>
