@@ -105,7 +105,11 @@ const HIDE_PRACTICE = 0.5;
 /** Starting blobs and newcomers hide for this long, give or take HIDE_START_SPREAD (s). */
 const HIDE_START = 1;
 const HIDE_START_SPREAD = 0.8;
-const HIDE_MUTATION: Record<MutationLevel, number> = { off: 0, small: 0.3, large: 0.6 };
+/**
+ * Typical size of one hiding-time mutation (s). Large next to the starting times on purpose: with
+ * little variation there is little to select, and Darwin's blobs barely change in a class period.
+ */
+const HIDE_MUTATION: Record<MutationLevel, number> = { off: 0, small: 0.5, large: 0.9 };
 export const PATIENCE = 2;
 const PATIENCE_MAX = 15;
 
